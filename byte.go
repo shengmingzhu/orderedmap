@@ -44,6 +44,9 @@ func (m *Byte) Delete(key byte) {
 // O(logN)
 func (m *Byte) Min() (byte, interface{}) {
 	key, value := m.m.Min()
+	if key == nil {
+		return 0, value
+	}
 	return key.(byte), value
 }
 
@@ -52,6 +55,9 @@ func (m *Byte) Min() (byte, interface{}) {
 // O(logN)
 func (m *Byte) Max() (byte, interface{}) {
 	key, value := m.m.Max()
+	if key == nil {
+		return 0, value
+	}
 	return key.(byte), value
 }
 
@@ -59,6 +65,9 @@ func (m *Byte) Max() (byte, interface{}) {
 // O(logN)
 func (m *Byte) PopMin() (byte, interface{}) {
 	key, value := m.m.PopMin()
+	if key == nil {
+		return 0, value
+	}
 	return key.(byte), value
 }
 
@@ -66,6 +75,9 @@ func (m *Byte) PopMin() (byte, interface{}) {
 // O(logN)
 func (m *Byte) PopMax() (byte, interface{}) {
 	key, value := m.m.PopMax()
+	if key == nil {
+		return 0, value
+	}
 	return key.(byte), value
 }
 
@@ -121,4 +133,9 @@ func (m *Byte) Len() int {
 
 func (m *Byte) IsEmpty() bool {
 	return m.m.IsEmpty()
+}
+
+// Deprecated: only for debugging, unstable function
+func (m *Byte) String() string {
+	return m.m.String()
 }

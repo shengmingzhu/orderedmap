@@ -44,6 +44,9 @@ func (m *Uint64) Delete(key uint64) {
 // O(logN)
 func (m *Uint64) Min() (uint64, interface{}) {
 	key, value := m.m.Min()
+	if key == nil {
+		return 0, value
+	}
 	return key.(uint64), value
 }
 
@@ -52,6 +55,9 @@ func (m *Uint64) Min() (uint64, interface{}) {
 // O(logN)
 func (m *Uint64) Max() (uint64, interface{}) {
 	key, value := m.m.Max()
+	if key == nil {
+		return 0, value
+	}
 	return key.(uint64), value
 }
 
@@ -59,6 +65,9 @@ func (m *Uint64) Max() (uint64, interface{}) {
 // O(logN)
 func (m *Uint64) PopMin() (uint64, interface{}) {
 	key, value := m.m.PopMin()
+	if key == nil {
+		return 0, value
+	}
 	return key.(uint64), value
 }
 
@@ -66,6 +75,9 @@ func (m *Uint64) PopMin() (uint64, interface{}) {
 // O(logN)
 func (m *Uint64) PopMax() (uint64, interface{}) {
 	key, value := m.m.PopMax()
+	if key == nil {
+		return 0, value
+	}
 	return key.(uint64), value
 }
 
@@ -121,4 +133,9 @@ func (m *Uint64) Len() int {
 
 func (m *Uint64) IsEmpty() bool {
 	return m.m.IsEmpty()
+}
+
+// Deprecated: only for debugging, unstable function
+func (m *Uint64) String() string {
+	return m.m.String()
 }

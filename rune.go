@@ -44,6 +44,9 @@ func (m *Rune) Delete(key rune) {
 // O(logN)
 func (m *Rune) Min() (rune, interface{}) {
 	key, value := m.m.Min()
+	if key == nil {
+		return 0, value
+	}
 	return key.(rune), value
 }
 
@@ -52,6 +55,9 @@ func (m *Rune) Min() (rune, interface{}) {
 // O(logN)
 func (m *Rune) Max() (rune, interface{}) {
 	key, value := m.m.Max()
+	if key == nil {
+		return 0, value
+	}
 	return key.(rune), value
 }
 
@@ -59,6 +65,9 @@ func (m *Rune) Max() (rune, interface{}) {
 // O(logN)
 func (m *Rune) PopMin() (rune, interface{}) {
 	key, value := m.m.PopMin()
+	if key == nil {
+		return 0, value
+	}
 	return key.(rune), value
 }
 
@@ -66,6 +75,9 @@ func (m *Rune) PopMin() (rune, interface{}) {
 // O(logN)
 func (m *Rune) PopMax() (rune, interface{}) {
 	key, value := m.m.PopMax()
+	if key == nil {
+		return 0, value
+	}
 	return key.(rune), value
 }
 
@@ -121,4 +133,9 @@ func (m *Rune) Len() int {
 
 func (m *Rune) IsEmpty() bool {
 	return m.m.IsEmpty()
+}
+
+// Deprecated: only for debugging, unstable function
+func (m *Rune) String() string {
+	return m.m.String()
 }

@@ -44,6 +44,9 @@ func (m *Uintptr) Delete(key uintptr) {
 // O(logN)
 func (m *Uintptr) Min() (uintptr, interface{}) {
 	key, value := m.m.Min()
+	if key == nil {
+		return 0, value
+	}
 	return key.(uintptr), value
 }
 
@@ -52,6 +55,9 @@ func (m *Uintptr) Min() (uintptr, interface{}) {
 // O(logN)
 func (m *Uintptr) Max() (uintptr, interface{}) {
 	key, value := m.m.Max()
+	if key == nil {
+		return 0, value
+	}
 	return key.(uintptr), value
 }
 
@@ -59,6 +65,9 @@ func (m *Uintptr) Max() (uintptr, interface{}) {
 // O(logN)
 func (m *Uintptr) PopMin() (uintptr, interface{}) {
 	key, value := m.m.PopMin()
+	if key == nil {
+		return 0, value
+	}
 	return key.(uintptr), value
 }
 
@@ -66,6 +75,9 @@ func (m *Uintptr) PopMin() (uintptr, interface{}) {
 // O(logN)
 func (m *Uintptr) PopMax() (uintptr, interface{}) {
 	key, value := m.m.PopMax()
+	if key == nil {
+		return 0, value
+	}
 	return key.(uintptr), value
 }
 
@@ -121,4 +133,9 @@ func (m *Uintptr) Len() int {
 
 func (m *Uintptr) IsEmpty() bool {
 	return m.m.IsEmpty()
+}
+
+// Deprecated: only for debugging, unstable function
+func (m *Uintptr) String() string {
+	return m.m.String()
 }

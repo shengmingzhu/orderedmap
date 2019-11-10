@@ -10,18 +10,18 @@ import (
 )
 
 const (
-	testCount uint32 = 1 << 4
-	rangeLen         = 1 << 10
+	testCountInt64 int64 = 1 << 4
+	rangeLenInt64        = 1 << 10
 )
 
-func TestNewUint32(t *testing.T) {
-	Convey("NewUint32 and Put and Len", t, func() {
-		m := orderedmap.NewUint32()
-		hm := make(map[uint32]struct{}, testCount)
-		sl := make([]uint32, 0, testCount)
+func TestNewInt64(t *testing.T) {
+	Convey("NewInt64 and Put and Len", t, func() {
+		m := orderedmap.NewInt64()
+		hm := make(map[int64]struct{}, testCountInt64)
+		sl := make([]int64, 0, testCountInt64)
 		rand.Seed(time.Now().UnixNano())
-		for i := uint32(0); i < testCount; {
-			key := uint32(rand.Int31n(0x40000000)) & (0x40000000 - 1)
+		for i := int64(0); i < testCountInt64; {
+			key := int64(uint32(rand.Int31n(0x40000000)) & (0x40000000 - 1))
 			if _, ok := hm[key]; !ok {
 				hm[key] = struct{}{}
 				m.Put(key, key<<1)
@@ -47,7 +47,7 @@ func TestNewUint32(t *testing.T) {
 
 		Convey("Max", func() {
 			key, _ := m.Max()
-			So(key, ShouldEqual, sl[testCount-1])
+			So(key, ShouldEqual, sl[testCountInt64-1])
 		})
 
 		Convey("RangeAll", func() {
@@ -63,15 +63,15 @@ func TestNewUint32(t *testing.T) {
 			pairs := m.RangeAllDesc()
 			So(len(pairs), ShouldEqual, len(sl))
 			for i := range pairs {
-				So(pairs[i].Key, ShouldEqual, sl[int(testCount)-i-1])
+				So(pairs[i].Key, ShouldEqual, sl[int(testCountInt64)-i-1])
 				So(pairs[i].Value, ShouldEqual, pairs[i].Key<<1)
 			}
 		})
 
 		Convey("Range", func() {
 			rand.Seed(time.Now().UnixNano())
-			iKey1 := uint32(rand.Int63n(int64(testCount)>>1)) & uint32((int64(testCount)>>1)-1)
-			iKey2 := uint32(rand.Int63n(int64(testCount)>>1)) & uint32((int64(testCount)>>1)-1)
+			iKey1 := int64(rand.Int63n(int64(testCountInt64)>>1)) & int64((int64(testCountInt64)>>1)-1)
+			iKey2 := int64(rand.Int63n(int64(testCountInt64)>>1)) & int64((int64(testCountInt64)>>1)-1)
 			if iKey2 < 1 {
 				iKey2 = 1
 			}
@@ -85,8 +85,8 @@ func TestNewUint32(t *testing.T) {
 
 		Convey("RangeDesc", func() {
 			rand.Seed(time.Now().UnixNano())
-			iKey1 := uint32(rand.Int63n(int64(testCount)>>1)) & uint32((int64(testCount)>>1)-1)
-			iKey2 := uint32(rand.Int63n(int64(testCount)>>1)) & uint32((int64(testCount)>>1)-1)
+			iKey1 := int64(rand.Int63n(int64(testCountInt64)>>1)) & int64((int64(testCountInt64)>>1)-1)
+			iKey2 := int64(rand.Int63n(int64(testCountInt64)>>1)) & int64((int64(testCountInt64)>>1)-1)
 			if iKey2 < 1 {
 				iKey2 = 1
 			}
@@ -133,16 +133,43 @@ func TestNewUint32(t *testing.T) {
 				So(m.Len(), ShouldEqual, count)
 			}
 		})
+
+		Convey("EmptyMap", func() {
+			m := orderedmap.NewInt64()
+			v := m.Get(1)
+			So(v, ShouldEqual, nil)
+			m.Delete(2)
+			k, v := m.Min()
+			So(k, ShouldEqual, 0)
+			So(v, ShouldEqual, nil)
+			k, v = m.Max()
+			So(k, ShouldEqual, 0)
+			So(v, ShouldEqual, nil)
+			k, v = m.PopMin()
+			So(k, ShouldEqual, 0)
+			So(v, ShouldEqual, nil)
+			k, v = m.PopMax()
+			So(k, ShouldEqual, 0)
+			So(v, ShouldEqual, nil)
+			res := m.RangeAll()
+			So(len(res), ShouldEqual, 0)
+			res = m.RangeAllDesc()
+			So(len(res), ShouldEqual, 0)
+			res = m.Range(1, 10)
+			So(len(res), ShouldEqual, 0)
+			res = m.RangeDesc(1, 10)
+			So(len(res), ShouldEqual, 0)
+		})
 	})
 }
 
-func BenchmarkUint32_Put(b *testing.B) {
+func BenchmarkInt64_Put(b *testing.B) {
 	b.StopTimer()
-	m := orderedmap.NewUint32()
-	sl := make([]uint32, 0, b.N)
+	m := orderedmap.NewInt64()
+	sl := make([]int64, 0, b.N)
 	rand.Seed(time.Now().UnixNano())
 	for i := 0; i < b.N; i++ {
-		key := uint32(rand.Int31n(0x40000000)) & (0x40000000 - 1)
+		key := int64(uint32(rand.Int31n(0x40000000)) & (0x40000000 - 1))
 		sl = append(sl, key)
 	}
 	b.StartTimer()
@@ -151,13 +178,13 @@ func BenchmarkUint32_Put(b *testing.B) {
 	}
 }
 
-func BenchmarkHashMap_Put(b *testing.B) {
+func BenchmarkHashMapInt64_Put(b *testing.B) {
 	b.StopTimer()
-	m := make(map[uint32]struct{})
-	sl := make([]uint32, 0, b.N)
+	m := make(map[int64]struct{})
+	sl := make([]int64, 0, b.N)
 	rand.Seed(time.Now().UnixNano())
 	for i := 0; i < b.N; i++ {
-		key := uint32(rand.Int31n(0x40000000)) & (0x40000000 - 1)
+		key := int64(uint32(rand.Int31n(0x40000000)) & (0x40000000 - 1))
 		sl = append(sl, key)
 	}
 	b.StartTimer()
@@ -166,13 +193,13 @@ func BenchmarkHashMap_Put(b *testing.B) {
 	}
 }
 
-func BenchmarkUint32_Get(b *testing.B) {
+func BenchmarkInt64_Get(b *testing.B) {
 	b.StopTimer()
-	m := orderedmap.NewUint32()
-	sl := make([]uint32, 0, b.N)
+	m := orderedmap.NewInt64()
+	sl := make([]int64, 0, b.N)
 	rand.Seed(time.Now().UnixNano())
 	for i := 0; i < b.N; i++ {
-		key := uint32(rand.Int31n(0x40000000)) & (0x40000000 - 1)
+		key := int64(uint32(rand.Int31n(0x40000000)) & (0x40000000 - 1))
 		sl = append(sl, key)
 		m.Put(key, struct{}{})
 	}
@@ -182,13 +209,13 @@ func BenchmarkUint32_Get(b *testing.B) {
 	}
 }
 
-func BenchmarkHashMap_Get(b *testing.B) {
+func BenchmarkHashMapInt64_Get(b *testing.B) {
 	b.StopTimer()
-	m := make(map[uint32]struct{})
-	sl := make([]uint32, 0, b.N)
+	m := make(map[int64]struct{})
+	sl := make([]int64, 0, b.N)
 	rand.Seed(time.Now().UnixNano())
 	for i := 0; i < b.N; i++ {
-		key := uint32(rand.Int31n(0x40000000)) & (0x40000000 - 1)
+		key := int64(uint32(rand.Int31n(0x40000000)) & (0x40000000 - 1))
 		sl = append(sl, key)
 		m[key] = struct{}{}
 	}
@@ -198,13 +225,13 @@ func BenchmarkHashMap_Get(b *testing.B) {
 	}
 }
 
-func BenchmarkUint32_Delete(b *testing.B) {
+func BenchmarkInt64_Delete(b *testing.B) {
 	b.StopTimer()
-	m := orderedmap.NewUint32()
-	sl := make([]uint32, 0, b.N)
+	m := orderedmap.NewInt64()
+	sl := make([]int64, 0, b.N)
 	rand.Seed(time.Now().UnixNano())
 	for i := 0; i < b.N; i++ {
-		key := uint32(rand.Int31n(0x40000000)) & (0x40000000 - 1)
+		key := int64(uint32(rand.Int31n(0x40000000)) & (0x40000000 - 1))
 		sl = append(sl, key)
 		m.Put(key, struct{}{})
 	}
@@ -214,13 +241,13 @@ func BenchmarkUint32_Delete(b *testing.B) {
 	}
 }
 
-func BenchmarkHashMap_Delete(b *testing.B) {
+func BenchmarkHashMapInt64_Delete(b *testing.B) {
 	b.StopTimer()
-	m := make(map[uint32]struct{})
-	sl := make([]uint32, 0, b.N)
+	m := make(map[int64]struct{})
+	sl := make([]int64, 0, b.N)
 	rand.Seed(time.Now().UnixNano())
 	for i := 0; i < b.N; i++ {
-		key := uint32(rand.Int31n(0x40000000)) & (0x40000000 - 1)
+		key := int64(uint32(rand.Int31n(0x40000000)) & (0x40000000 - 1))
 		sl = append(sl, key)
 		m[key] = struct{}{}
 	}
@@ -230,12 +257,12 @@ func BenchmarkHashMap_Delete(b *testing.B) {
 	}
 }
 
-func BenchmarkUint32_RangeAll(b *testing.B) {
+func BenchmarkInt64_RangeAll(b *testing.B) {
 	b.StopTimer()
-	m := orderedmap.NewUint32()
+	m := orderedmap.NewInt64()
 	rand.Seed(time.Now().UnixNano())
-	for i := 0; i < rangeLen; i++ {
-		key := uint32(rand.Int31n(0x40000000)) & (0x40000000 - 1)
+	for i := 0; i < rangeLenInt64; i++ {
+		key := int64(uint32(rand.Int31n(0x40000000)) & (0x40000000 - 1))
 		m.Put(key, struct{}{})
 	}
 	b.StartTimer()
@@ -244,37 +271,37 @@ func BenchmarkUint32_RangeAll(b *testing.B) {
 	}
 }
 
-func BenchmarkHashMap_RangeAllNoSort(b *testing.B) {
+func BenchmarkHashMapInt64_RangeAllNoSort(b *testing.B) {
 	b.StopTimer()
-	m := make(map[uint32]struct{})
+	m := make(map[int64]struct{})
 	rand.Seed(time.Now().UnixNano())
-	for i := 0; i < rangeLen; i++ {
-		key := uint32(rand.Int31n(0x40000000)) & (0x40000000 - 1)
+	for i := 0; i < rangeLenInt64; i++ {
+		key := int64(uint32(rand.Int31n(0x40000000)) & (0x40000000 - 1))
 		m[key] = struct{}{}
 	}
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
-		arr := make([]*orderedmap.Uint32KeyValue, 0)
+		arr := make([]*orderedmap.Int64KeyValue, 0)
 		for key, value := range m {
-			pair := &orderedmap.Uint32KeyValue{Key: key, Value: value}
+			pair := &orderedmap.Int64KeyValue{Key: key, Value: value}
 			arr = append(arr, pair)
 		}
 	}
 }
 
-func BenchmarkHashMap_RangeAllAndSort(b *testing.B) {
+func BenchmarkHashMapInt64_RangeAllAndSort(b *testing.B) {
 	b.StopTimer()
-	m := make(map[uint32]struct{})
+	m := make(map[int64]struct{})
 	rand.Seed(time.Now().UnixNano())
-	for i := 0; i < rangeLen; i++ {
-		key := uint32(rand.Int31n(0x40000000)) & (0x40000000 - 1)
+	for i := 0; i < rangeLenInt64; i++ {
+		key := int64(uint32(rand.Int31n(0x40000000)) & (0x40000000 - 1))
 		m[key] = struct{}{}
 	}
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
-		arr := make([]*orderedmap.Uint32KeyValue, 0)
+		arr := make([]*orderedmap.Int64KeyValue, 0)
 		for key, value := range m {
-			pair := &orderedmap.Uint32KeyValue{Key: key, Value: value}
+			pair := &orderedmap.Int64KeyValue{Key: key, Value: value}
 			arr = append(arr, pair)
 		}
 		sort.Slice(arr, func(i, j int) bool {

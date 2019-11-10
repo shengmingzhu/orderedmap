@@ -44,6 +44,9 @@ func (m *Uint32) Delete(key uint32) {
 // O(logN)
 func (m *Uint32) Min() (uint32, interface{}) {
 	key, value := m.m.Min()
+	if key == nil {
+		return 0, value
+	}
 	return key.(uint32), value
 }
 
@@ -52,6 +55,9 @@ func (m *Uint32) Min() (uint32, interface{}) {
 // O(logN)
 func (m *Uint32) Max() (uint32, interface{}) {
 	key, value := m.m.Max()
+	if key == nil {
+		return 0, value
+	}
 	return key.(uint32), value
 }
 
@@ -59,6 +65,9 @@ func (m *Uint32) Max() (uint32, interface{}) {
 // O(logN)
 func (m *Uint32) PopMin() (uint32, interface{}) {
 	key, value := m.m.PopMin()
+	if key == nil {
+		return 0, value
+	}
 	return key.(uint32), value
 }
 
@@ -66,6 +75,9 @@ func (m *Uint32) PopMin() (uint32, interface{}) {
 // O(logN)
 func (m *Uint32) PopMax() (uint32, interface{}) {
 	key, value := m.m.PopMax()
+	if key == nil {
+		return 0, value
+	}
 	return key.(uint32), value
 }
 
