@@ -127,6 +127,30 @@ func (m *Uint) RangeDesc(minKey, maxKey uint) []*UintKeyValue {
 	return res
 }
 
+// RangeN get num key-values which >= key in ASC
+// Pair.First: Key, Pair.Second: Value
+// O(N)
+func (m *Uint) RangeN(num int, key uint) []*UintKeyValue {
+	r := m.m.RangeN(num, key)
+	res := make([]*UintKeyValue, len(r))
+	for i, v := range r {
+		res[i] = &UintKeyValue{Key: v.First.(uint), Value: v.Second}
+	}
+	return res
+}
+
+// RangeDescN get num key-values which <= key in DESC
+// Pair.First: Key, Pair.Second: Value
+// O(N)
+func (m *Uint) RangeDescN(num int, key uint) []*UintKeyValue {
+	r := m.m.RangeDescN(num, key)
+	res := make([]*UintKeyValue, len(r))
+	for i, v := range r {
+		res[i] = &UintKeyValue{Key: v.First.(uint), Value: v.Second}
+	}
+	return res
+}
+
 func (m *Uint) Len() int {
 	return m.m.Len()
 }

@@ -17,6 +17,8 @@ type OrderedMap interface {
 	RangeAllDesc() []*pair.Pair                        // O(N)
 	Range(minKey, maxKey interface{}) []*pair.Pair     // O(logN) + O(K), K is the number of keys between minKey and maxKey.
 	RangeDesc(minKey, maxKey interface{}) []*pair.Pair // O(logN) + O(K), K is the number of keys between minKey and maxKey.
+	RangeN(num int, key interface{}) []*pair.Pair      // O(logN) + O(K)
+	RangeDescN(num int, key interface{}) []*pair.Pair  // O(logN) + O(K)
 
 	Len() int      // O(1)
 	IsEmpty() bool // O(1)

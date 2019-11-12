@@ -127,6 +127,30 @@ func (m *Rune) RangeDesc(minKey, maxKey rune) []*RuneKeyValue {
 	return res
 }
 
+// RangeN get num key-values which >= key in ASC
+// Pair.First: Key, Pair.Second: Value
+// O(N)
+func (m *Rune) RangeN(num int, key rune) []*RuneKeyValue {
+	r := m.m.RangeN(num, key)
+	res := make([]*RuneKeyValue, len(r))
+	for i, v := range r {
+		res[i] = &RuneKeyValue{Key: v.First.(rune), Value: v.Second}
+	}
+	return res
+}
+
+// RangeDescN get num key-values which <= key in DESC
+// Pair.First: Key, Pair.Second: Value
+// O(N)
+func (m *Rune) RangeDescN(num int, key rune) []*RuneKeyValue {
+	r := m.m.RangeDescN(num, key)
+	res := make([]*RuneKeyValue, len(r))
+	for i, v := range r {
+		res[i] = &RuneKeyValue{Key: v.First.(rune), Value: v.Second}
+	}
+	return res
+}
+
 func (m *Rune) Len() int {
 	return m.m.Len()
 }

@@ -115,6 +115,30 @@ func (m *Byte) Range(minKey, maxKey byte) []*ByteKeyValue {
 	return res
 }
 
+// RangeN get num key-values which >= key in ASC
+// Pair.First: Key, Pair.Second: Value
+// O(N)
+func (m *Byte) RangeN(num int, key byte) []*ByteKeyValue {
+	r := m.m.RangeN(num, key)
+	res := make([]*ByteKeyValue, len(r))
+	for i, v := range r {
+		res[i] = &ByteKeyValue{Key: v.First.(byte), Value: v.Second}
+	}
+	return res
+}
+
+// RangeDescN get num key-values which <= key in DESC
+// Pair.First: Key, Pair.Second: Value
+// O(N)
+func (m *Byte) RangeDescN(num int, key byte) []*ByteKeyValue {
+	r := m.m.RangeDescN(num, key)
+	res := make([]*ByteKeyValue, len(r))
+	for i, v := range r {
+		res[i] = &ByteKeyValue{Key: v.First.(byte), Value: v.Second}
+	}
+	return res
+}
+
 // RangeDesc traversals in [minKey, maxKey] in DESC
 // MinKey & MaxKey are all closed interval.
 // O(N)

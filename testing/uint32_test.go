@@ -98,6 +98,39 @@ func TestNewUint32(t *testing.T) {
 			}
 		})
 
+		Convey("RangeN", func() {
+			rand.Seed(time.Now().UnixNano())
+			iKey1 := 4
+			iKey2 := 3
+			pairs := m.RangeN(int(iKey2), sl[iKey1]-1)
+			So(len(pairs), ShouldEqual, iKey2)
+			for i := range pairs {
+				if sl[iKey1]-1 == sl[iKey1-1] {
+					So(pairs[i].Key, ShouldEqual, sl[int(iKey1)+i-1])
+				} else {
+					So(pairs[i].Key, ShouldEqual, sl[int(iKey1)+i])
+				}
+				So(pairs[i].Value, ShouldEqual, pairs[i].Key<<1)
+			}
+		})
+
+		Convey("RangeDescN", func() {
+			rand.Seed(time.Now().UnixNano())
+			iKey1 := 4
+			iKey2 := 3
+			pairs := m.RangeDescN(int(iKey2), sl[iKey1]+1)
+			So(len(pairs), ShouldEqual, iKey2)
+			for i := range pairs {
+				if sl[iKey1]+1 == sl[iKey1+1] {
+					So(pairs[i].Key, ShouldEqual, sl[int(iKey1)-i+1])
+				} else {
+					So(pairs[i].Key, ShouldEqual, sl[int(iKey1)-i])
+				}
+
+				So(pairs[i].Value, ShouldEqual, pairs[i].Key<<1)
+			}
+		})
+
 		Convey("String", func() {
 			str := m.String()
 			//fmt.Println()

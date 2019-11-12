@@ -127,6 +127,30 @@ func (m *Int64) RangeDesc(minKey, maxKey int64) []*Int64KeyValue {
 	return res
 }
 
+// RangeN get num key-values which >= key in ASC
+// Pair.First: Key, Pair.Second: Value
+// O(N)
+func (m *Int64) RangeN(num int, key int64) []*Int64KeyValue {
+	r := m.m.RangeN(num, key)
+	res := make([]*Int64KeyValue, len(r))
+	for i, v := range r {
+		res[i] = &Int64KeyValue{Key: v.First.(int64), Value: v.Second}
+	}
+	return res
+}
+
+// RangeDescN get num key-values which <= key in DESC
+// Pair.First: Key, Pair.Second: Value
+// O(N)
+func (m *Int64) RangeDescN(num int, key int64) []*Int64KeyValue {
+	r := m.m.RangeDescN(num, key)
+	res := make([]*Int64KeyValue, len(r))
+	for i, v := range r {
+		res[i] = &Int64KeyValue{Key: v.First.(int64), Value: v.Second}
+	}
+	return res
+}
+
 func (m *Int64) Len() int {
 	return m.m.Len()
 }

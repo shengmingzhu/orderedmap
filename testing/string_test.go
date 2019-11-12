@@ -99,6 +99,28 @@ func TestNewString(t *testing.T) {
 			}
 		})
 
+		Convey("RangeN", func() {
+			rand.Seed(time.Now().UnixNano())
+			iKey1 := 4
+			iKey2 := 3
+			pairs := m.RangeN(int(iKey2), sl[iKey1])
+			So(len(pairs), ShouldEqual, iKey2)
+			for i := range pairs {
+				So(pairs[i].Key, ShouldEqual, sl[int(iKey1)+i])
+			}
+		})
+
+		Convey("RangeDescN", func() {
+			rand.Seed(time.Now().UnixNano())
+			iKey1 := 4
+			iKey2 := 3
+			pairs := m.RangeDescN(int(iKey2), sl[iKey1])
+			So(len(pairs), ShouldEqual, iKey2)
+			for i := range pairs {
+				So(pairs[i].Key, ShouldEqual, sl[int(iKey1)-i])
+			}
+		})
+
 		Convey("String", func() {
 			str := m.String()
 			//fmt.Println()

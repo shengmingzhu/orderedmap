@@ -127,6 +127,30 @@ func (m *Uint8) RangeDesc(minKey, maxKey uint8) []*Uint8KeyValue {
 	return res
 }
 
+// RangeN get num key-values which >= key in ASC
+// Pair.First: Key, Pair.Second: Value
+// O(N)
+func (m *Uint8) RangeN(num int, key uint8) []*Uint8KeyValue {
+	r := m.m.RangeN(num, key)
+	res := make([]*Uint8KeyValue, len(r))
+	for i, v := range r {
+		res[i] = &Uint8KeyValue{Key: v.First.(uint8), Value: v.Second}
+	}
+	return res
+}
+
+// RangeDescN get num key-values which <= key in DESC
+// Pair.First: Key, Pair.Second: Value
+// O(N)
+func (m *Uint8) RangeDescN(num int, key uint8) []*Uint8KeyValue {
+	r := m.m.RangeDescN(num, key)
+	res := make([]*Uint8KeyValue, len(r))
+	for i, v := range r {
+		res[i] = &Uint8KeyValue{Key: v.First.(uint8), Value: v.Second}
+	}
+	return res
+}
+
 func (m *Uint8) Len() int {
 	return m.m.Len()
 }
