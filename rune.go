@@ -1,5 +1,7 @@
 package orderedmap
 
+import "github.com/shengmingzhu/datastructures/pair"
+
 type Rune struct {
 	m OrderedMap
 }
@@ -20,9 +22,9 @@ func cmpRune(key1, key2 interface{}) int {
 }
 
 // Get returns the value to key, or nil if not found.
-// For example: if value := t.Get(key); value != nil { value found }
+// For example: if value, ok := t.Get(key); ok { value found }
 // O(logN)
-func (m *Rune) Get(key rune) interface{} {
+func (m *Rune) Get(key rune) (interface{}, bool) {
 	return m.m.Get(key)
 }
 
@@ -81,74 +83,63 @@ func (m *Rune) PopMax() (rune, interface{}) {
 	return key.(rune), value
 }
 
-// RangeAll traversals in ASC
-// O(N)
-func (m *Rune) RangeAll() []*RuneKeyValue {
-	r := m.m.RangeAll()
-	res := make([]*RuneKeyValue, len(r))
-	for i, v := range r {
-		res[i] = &RuneKeyValue{Key: v.First.(rune), Value: v.Second}
+func (m *Rune) Keys() []rune {
+	r := m.m.Keys()
+	res := make([]rune, len(r))
+	for i := range r {
+		res[i] = r[i].(rune)
 	}
 	return res
 }
 
+func (m *Rune) Values() []interface{} {
+	return m.m.Values()
+}
+
+// RangeAll traversals in ASC
+// O(N)
+func (m *Rune) RangeAll() []RuneKeyValue {
+	r := m.m.RangeAll()
+	return transformRune(r)
+}
+
 // RangeAllDesc traversals in DESC
 // O(N)
-func (m *Rune) RangeAllDesc() []*RuneKeyValue {
+func (m *Rune) RangeAllDesc() []RuneKeyValue {
 	r := m.m.RangeAllDesc()
-	res := make([]*RuneKeyValue, len(r))
-	for i, v := range r {
-		res[i] = &RuneKeyValue{Key: v.First.(rune), Value: v.Second}
-	}
-	return res
+	return transformRune(r)
 }
 
 // Range traversals in [minKey, maxKey] in ASC
 // MinKey & MaxKey are all closed interval.
 // O(N)
-func (m *Rune) Range(minKey, maxKey rune) []*RuneKeyValue {
+func (m *Rune) Range(minKey, maxKey rune) []RuneKeyValue {
 	r := m.m.Range(minKey, maxKey)
-	res := make([]*RuneKeyValue, len(r))
-	for i, v := range r {
-		res[i] = &RuneKeyValue{Key: v.First.(rune), Value: v.Second}
-	}
-	return res
+	return transformRune(r)
 }
 
 // RangeDesc traversals in [minKey, maxKey] in DESC
 // MinKey & MaxKey are all closed interval.
 // O(N)
-func (m *Rune) RangeDesc(minKey, maxKey rune) []*RuneKeyValue {
+func (m *Rune) RangeDesc(minKey, maxKey rune) []RuneKeyValue {
 	r := m.m.RangeDesc(minKey, maxKey)
-	res := make([]*RuneKeyValue, len(r))
-	for i, v := range r {
-		res[i] = &RuneKeyValue{Key: v.First.(rune), Value: v.Second}
-	}
-	return res
+	return transformRune(r)
 }
 
 // RangeN get num key-values which >= key in ASC
 // Pair.First: Key, Pair.Second: Value
 // O(N)
-func (m *Rune) RangeN(num int, key rune) []*RuneKeyValue {
+func (m *Rune) RangeN(num int, key rune) []RuneKeyValue {
 	r := m.m.RangeN(num, key)
-	res := make([]*RuneKeyValue, len(r))
-	for i, v := range r {
-		res[i] = &RuneKeyValue{Key: v.First.(rune), Value: v.Second}
-	}
-	return res
+	return transformRune(r)
 }
 
 // RangeDescN get num key-values which <= key in DESC
 // Pair.First: Key, Pair.Second: Value
 // O(N)
-func (m *Rune) RangeDescN(num int, key rune) []*RuneKeyValue {
+func (m *Rune) RangeDescN(num int, key rune) []RuneKeyValue {
 	r := m.m.RangeDescN(num, key)
-	res := make([]*RuneKeyValue, len(r))
-	for i, v := range r {
-		res[i] = &RuneKeyValue{Key: v.First.(rune), Value: v.Second}
-	}
-	return res
+	return transformRune(r)
 }
 
 func (m *Rune) Len() int {
@@ -162,4 +153,13 @@ func (m *Rune) IsEmpty() bool {
 // Deprecated: only for debugging, unstable function
 func (m *Rune) String() string {
 	return m.m.String()
+}
+
+func transformRune(r []pair.Pair) []RuneKeyValue {
+	res := make([]RuneKeyValue, len(r))
+	for i := range r {
+		res[i].Key = r[i].First.(rune)
+		res[i].Value = r[i].Second
+	}
+	return res
 }

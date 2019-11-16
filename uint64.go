@@ -1,5 +1,9 @@
 package orderedmap
 
+import (
+	"github.com/shengmingzhu/datastructures/pair"
+)
+
 type Uint64 struct {
 	m OrderedMap
 }
@@ -20,9 +24,9 @@ func cmpUint64(key1, key2 interface{}) int {
 }
 
 // Get returns the value to key, or nil if not found.
-// For example: if value := t.Get(key); value != nil { value found }
+// For example: if value, ok := t.Get(key); ok { value found }
 // O(logN)
-func (m *Uint64) Get(key uint64) interface{} {
+func (m *Uint64) Get(key uint64) (interface{}, bool) {
 	return m.m.Get(key)
 }
 
@@ -81,74 +85,63 @@ func (m *Uint64) PopMax() (uint64, interface{}) {
 	return key.(uint64), value
 }
 
-// RangeAll traversals in ASC
-// O(N)
-func (m *Uint64) RangeAll() []*Uint64KeyValue {
-	r := m.m.RangeAll()
-	res := make([]*Uint64KeyValue, len(r))
-	for i, v := range r {
-		res[i] = &Uint64KeyValue{Key: v.First.(uint64), Value: v.Second}
+func (m *Uint64) Keys() []uint64 {
+	r := m.m.Keys()
+	res := make([]uint64, len(r))
+	for i := range r {
+		res[i] = r[i].(uint64)
 	}
 	return res
 }
 
+func (m *Uint64) Values() []interface{} {
+	return m.m.Values()
+}
+
+// RangeAll traversals in ASC
+// O(N)
+func (m *Uint64) RangeAll() []Uint64KeyValue {
+	r := m.m.RangeAll()
+	return transformUint64(r)
+}
+
 // RangeAllDesc traversals in DESC
 // O(N)
-func (m *Uint64) RangeAllDesc() []*Uint64KeyValue {
+func (m *Uint64) RangeAllDesc() []Uint64KeyValue {
 	r := m.m.RangeAllDesc()
-	res := make([]*Uint64KeyValue, len(r))
-	for i, v := range r {
-		res[i] = &Uint64KeyValue{Key: v.First.(uint64), Value: v.Second}
-	}
-	return res
+	return transformUint64(r)
 }
 
 // Range traversals in [minKey, maxKey] in ASC
 // MinKey & MaxKey are all closed interval.
 // O(N)
-func (m *Uint64) Range(minKey, maxKey uint64) []*Uint64KeyValue {
+func (m *Uint64) Range(minKey, maxKey uint64) []Uint64KeyValue {
 	r := m.m.Range(minKey, maxKey)
-	res := make([]*Uint64KeyValue, len(r))
-	for i, v := range r {
-		res[i] = &Uint64KeyValue{Key: v.First.(uint64), Value: v.Second}
-	}
-	return res
+	return transformUint64(r)
 }
 
 // RangeDesc traversals in [minKey, maxKey] in DESC
 // MinKey & MaxKey are all closed interval.
 // O(N)
-func (m *Uint64) RangeDesc(minKey, maxKey uint64) []*Uint64KeyValue {
+func (m *Uint64) RangeDesc(minKey, maxKey uint64) []Uint64KeyValue {
 	r := m.m.RangeDesc(minKey, maxKey)
-	res := make([]*Uint64KeyValue, len(r))
-	for i, v := range r {
-		res[i] = &Uint64KeyValue{Key: v.First.(uint64), Value: v.Second}
-	}
-	return res
+	return transformUint64(r)
 }
 
 // RangeN get num key-values which >= key in ASC
 // Pair.First: Key, Pair.Second: Value
 // O(N)
-func (m *Uint64) RangeN(num int, key uint64) []*Uint64KeyValue {
+func (m *Uint64) RangeN(num int, key uint64) []Uint64KeyValue {
 	r := m.m.RangeN(num, key)
-	res := make([]*Uint64KeyValue, len(r))
-	for i, v := range r {
-		res[i] = &Uint64KeyValue{Key: v.First.(uint64), Value: v.Second}
-	}
-	return res
+	return transformUint64(r)
 }
 
 // RangeDescN get num key-values which <= key in DESC
 // Pair.First: Key, Pair.Second: Value
 // O(N)
-func (m *Uint64) RangeDescN(num int, key uint64) []*Uint64KeyValue {
+func (m *Uint64) RangeDescN(num int, key uint64) []Uint64KeyValue {
 	r := m.m.RangeDescN(num, key)
-	res := make([]*Uint64KeyValue, len(r))
-	for i, v := range r {
-		res[i] = &Uint64KeyValue{Key: v.First.(uint64), Value: v.Second}
-	}
-	return res
+	return transformUint64(r)
 }
 
 func (m *Uint64) Len() int {
@@ -162,4 +155,13 @@ func (m *Uint64) IsEmpty() bool {
 // Deprecated: only for debugging, unstable function
 func (m *Uint64) String() string {
 	return m.m.String()
+}
+
+func transformUint64(r []pair.Pair) []Uint64KeyValue {
+	res := make([]Uint64KeyValue, len(r))
+	for i := range r {
+		res[i].Key = r[i].First.(uint64)
+		res[i].Value = r[i].Second
+	}
+	return res
 }

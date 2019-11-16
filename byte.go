@@ -1,5 +1,7 @@
 package orderedmap
 
+import "github.com/shengmingzhu/datastructures/pair"
+
 type Byte struct {
 	m OrderedMap
 }
@@ -20,9 +22,9 @@ func cmpByte(key1, key2 interface{}) int {
 }
 
 // Get returns the value to key, or nil if not found.
-// For example: if value := t.Get(key); value != nil { value found }
+// For example: if value, ok := t.Get(key); ok { value found }
 // O(logN)
-func (m *Byte) Get(key byte) interface{} {
+func (m *Byte) Get(key byte) (interface{}, bool) {
 	return m.m.Get(key)
 }
 
@@ -81,72 +83,70 @@ func (m *Byte) PopMax() (byte, interface{}) {
 	return key.(byte), value
 }
 
-// RangeAll traversals in ASC
-// O(N)
-func (m *Byte) RangeAll() []*ByteKeyValue {
-	r := m.m.RangeAll()
-	res := make([]*ByteKeyValue, len(r))
-	for i, v := range r {
-		res[i] = &ByteKeyValue{Key: v.First.(byte), Value: v.Second}
+func (m *Byte) Keys() []byte {
+	r := m.m.Keys()
+	res := make([]byte, len(r))
+	for i := range r {
+		res[i] = r[i].(byte)
 	}
 	return res
 }
 
+func (m *Byte) Values() []interface{} {
+	return m.m.Values()
+}
+
+// RangeAll traversals in ASC
+// O(N)
+func (m *Byte) RangeAll() []ByteKeyValue {
+	r := m.m.RangeAll()
+	return transformByte(r)
+}
+
 // RangeAllDesc traversals in DESC
 // O(N)
-func (m *Byte) RangeAllDesc() []*ByteKeyValue {
+func (m *Byte) RangeAllDesc() []ByteKeyValue {
 	r := m.m.RangeAllDesc()
-	res := make([]*ByteKeyValue, len(r))
-	for i, v := range r {
-		res[i] = &ByteKeyValue{Key: v.First.(byte), Value: v.Second}
-	}
-	return res
+	return transformByte(r)
 }
 
 // Range traversals in [minKey, maxKey] in ASC
 // MinKey & MaxKey are all closed interval.
 // O(N)
-func (m *Byte) Range(minKey, maxKey byte) []*ByteKeyValue {
+func (m *Byte) Range(minKey, maxKey byte) []ByteKeyValue {
 	r := m.m.Range(minKey, maxKey)
-	res := make([]*ByteKeyValue, len(r))
-	for i, v := range r {
-		res[i] = &ByteKeyValue{Key: v.First.(byte), Value: v.Second}
-	}
-	return res
+	return transformByte(r)
 }
 
 // RangeN get num key-values which >= key in ASC
 // Pair.First: Key, Pair.Second: Value
 // O(N)
-func (m *Byte) RangeN(num int, key byte) []*ByteKeyValue {
+func (m *Byte) RangeN(num int, key byte) []ByteKeyValue {
 	r := m.m.RangeN(num, key)
-	res := make([]*ByteKeyValue, len(r))
-	for i, v := range r {
-		res[i] = &ByteKeyValue{Key: v.First.(byte), Value: v.Second}
-	}
-	return res
+	return transformByte(r)
 }
 
 // RangeDescN get num key-values which <= key in DESC
 // Pair.First: Key, Pair.Second: Value
 // O(N)
-func (m *Byte) RangeDescN(num int, key byte) []*ByteKeyValue {
+func (m *Byte) RangeDescN(num int, key byte) []ByteKeyValue {
 	r := m.m.RangeDescN(num, key)
-	res := make([]*ByteKeyValue, len(r))
-	for i, v := range r {
-		res[i] = &ByteKeyValue{Key: v.First.(byte), Value: v.Second}
-	}
-	return res
+	return transformByte(r)
 }
 
 // RangeDesc traversals in [minKey, maxKey] in DESC
 // MinKey & MaxKey are all closed interval.
 // O(N)
-func (m *Byte) RangeDesc(minKey, maxKey byte) []*ByteKeyValue {
+func (m *Byte) RangeDesc(minKey, maxKey byte) []ByteKeyValue {
 	r := m.m.RangeDesc(minKey, maxKey)
-	res := make([]*ByteKeyValue, len(r))
-	for i, v := range r {
-		res[i] = &ByteKeyValue{Key: v.First.(byte), Value: v.Second}
+	return transformByte(r)
+}
+
+func transformByte(r []pair.Pair) []ByteKeyValue {
+	res := make([]ByteKeyValue, len(r))
+	for i := range r {
+		res[i].Key = r[i].First.(byte)
+		res[i].Value = r[i].Second
 	}
 	return res
 }

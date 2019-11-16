@@ -1,5 +1,7 @@
 package orderedmap
 
+import "github.com/shengmingzhu/datastructures/pair"
+
 type Int struct {
 	m OrderedMap
 }
@@ -14,9 +16,9 @@ func cmpInt(key1, key2 interface{}) int {
 }
 
 // Get returns the value to key, or nil if not found.
-// For example: if value := t.Get(key); value != nil { value found }
+// For example: if value, ok := t.Get(key); ok { value found }
 // O(logN)
-func (m *Int) Get(key int) interface{} {
+func (m *Int) Get(key int) (interface{}, bool) {
 	return m.m.Get(key)
 }
 
@@ -75,74 +77,63 @@ func (m *Int) PopMax() (int, interface{}) {
 	return key.(int), value
 }
 
-// RangeAll traversals in ASC
-// O(N)
-func (m *Int) RangeAll() []*IntKeyValue {
-	r := m.m.RangeAll()
-	res := make([]*IntKeyValue, len(r))
-	for i, v := range r {
-		res[i] = &IntKeyValue{Key: v.First.(int), Value: v.Second}
+func (m *Int) Keys() []int {
+	r := m.m.Keys()
+	res := make([]int, len(r))
+	for i := range r {
+		res[i] = r[i].(int)
 	}
 	return res
 }
 
+func (m *Int) Values() []interface{} {
+	return m.m.Values()
+}
+
+// RangeAll traversals in ASC
+// O(N)
+func (m *Int) RangeAll() []IntKeyValue {
+	r := m.m.RangeAll()
+	return transformInt(r)
+}
+
 // RangeAllDesc traversals in DESC
 // O(N)
-func (m *Int) RangeAllDesc() []*IntKeyValue {
+func (m *Int) RangeAllDesc() []IntKeyValue {
 	r := m.m.RangeAllDesc()
-	res := make([]*IntKeyValue, len(r))
-	for i, v := range r {
-		res[i] = &IntKeyValue{Key: v.First.(int), Value: v.Second}
-	}
-	return res
+	return transformInt(r)
 }
 
 // Range traversals in [minKey, maxKey] in ASC
 // MinKey & MaxKey are all closed interval.
 // O(N)
-func (m *Int) Range(minKey, maxKey int) []*IntKeyValue {
+func (m *Int) Range(minKey, maxKey int) []IntKeyValue {
 	r := m.m.Range(minKey, maxKey)
-	res := make([]*IntKeyValue, len(r))
-	for i, v := range r {
-		res[i] = &IntKeyValue{Key: v.First.(int), Value: v.Second}
-	}
-	return res
+	return transformInt(r)
 }
 
 // RangeDesc traversals in [minKey, maxKey] in DESC
 // MinKey & MaxKey are all closed interval.
 // O(N)
-func (m *Int) RangeDesc(minKey, maxKey int) []*IntKeyValue {
+func (m *Int) RangeDesc(minKey, maxKey int) []IntKeyValue {
 	r := m.m.RangeDesc(minKey, maxKey)
-	res := make([]*IntKeyValue, len(r))
-	for i, v := range r {
-		res[i] = &IntKeyValue{Key: v.First.(int), Value: v.Second}
-	}
-	return res
+	return transformInt(r)
 }
 
 // RangeN get num key-values which >= key in ASC
 // Pair.First: Key, Pair.Second: Value
 // O(N)
-func (m *Int) RangeN(num int, key int) []*IntKeyValue {
+func (m *Int) RangeN(num int, key int) []IntKeyValue {
 	r := m.m.RangeN(num, key)
-	res := make([]*IntKeyValue, len(r))
-	for i, v := range r {
-		res[i] = &IntKeyValue{Key: v.First.(int), Value: v.Second}
-	}
-	return res
+	return transformInt(r)
 }
 
 // RangeDescN get num key-values which <= key in DESC
 // Pair.First: Key, Pair.Second: Value
 // O(N)
-func (m *Int) RangeDescN(num int, key int) []*IntKeyValue {
+func (m *Int) RangeDescN(num int, key int) []IntKeyValue {
 	r := m.m.RangeDescN(num, key)
-	res := make([]*IntKeyValue, len(r))
-	for i, v := range r {
-		res[i] = &IntKeyValue{Key: v.First.(int), Value: v.Second}
-	}
-	return res
+	return transformInt(r)
 }
 
 func (m *Int) Len() int {
@@ -156,4 +147,13 @@ func (m *Int) IsEmpty() bool {
 // Deprecated: only for debugging, unstable function
 func (m *Int) String() string {
 	return m.m.String()
+}
+
+func transformInt(r []pair.Pair) []IntKeyValue {
+	res := make([]IntKeyValue, len(r))
+	for i := range r {
+		res[i].Key = r[i].First.(int)
+		res[i].Value = r[i].Second
+	}
+	return res
 }

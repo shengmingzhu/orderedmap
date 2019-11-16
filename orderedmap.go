@@ -5,20 +5,27 @@ import (
 	"github.com/shengmingzhu/datastructures/rbtree"
 )
 
+type Any OrderedMap
+
 type OrderedMap interface {
-	Get(interface{}) interface{}                       // O(logN)
-	Put(interface{}, interface{})                      // O(logN)
-	Delete(interface{})                                // O(logN)
-	Min() (interface{}, interface{})                   // O(logN)
-	Max() (interface{}, interface{})                   // O(logN)
-	PopMin() (interface{}, interface{})                // O(logN). Call Min() and Delete(), and return Min
-	PopMax() (interface{}, interface{})                // O(logN). Call Max() and Delete(), and return Max
-	RangeAll() []*pair.Pair                            // O(N)
-	RangeAllDesc() []*pair.Pair                        // O(N)
-	Range(minKey, maxKey interface{}) []*pair.Pair     // O(logN) + O(K), K is the number of keys between minKey and maxKey.
-	RangeDesc(minKey, maxKey interface{}) []*pair.Pair // O(logN) + O(K), K is the number of keys between minKey and maxKey.
-	RangeN(num int, key interface{}) []*pair.Pair      // O(logN) + O(K)
-	RangeDescN(num int, key interface{}) []*pair.Pair  // O(logN) + O(K)
+	Get(interface{}) (interface{}, bool) // O(logN)
+	Put(interface{}, interface{})        // O(logN)
+	Delete(interface{})                  // O(logN)
+
+	Keys() []interface{}   // O(N)
+	Values() []interface{} // O(N)
+
+	Min() (interface{}, interface{})    // O(logN)
+	Max() (interface{}, interface{})    // O(logN)
+	PopMin() (interface{}, interface{}) // O(logN). Call Min() and Delete(), and return Min
+	PopMax() (interface{}, interface{}) // O(logN). Call Max() and Delete(), and return Max
+
+	RangeAll() []pair.Pair                            // O(N)
+	RangeAllDesc() []pair.Pair                        // O(N)
+	Range(minKey, maxKey interface{}) []pair.Pair     // O(logN) + O(K), K is the number of keys between minKey and maxKey.
+	RangeDesc(minKey, maxKey interface{}) []pair.Pair // O(logN) + O(K), K is the number of keys between minKey and maxKey.
+	RangeN(num int, key interface{}) []pair.Pair      // O(logN) + O(K)
+	RangeDescN(num int, key interface{}) []pair.Pair  // O(logN) + O(K)
 
 	Len() int      // O(1)
 	IsEmpty() bool // O(1)
@@ -35,7 +42,7 @@ type OrderedMap interface {
 	String() string
 }
 
-func NewAny(cmp rbtree.CmpFunc) OrderedMap {
+func NewAny(cmp rbtree.CmpFunc) Any {
 	return rbtree.New(cmp)
 }
 

@@ -37,7 +37,9 @@ func TestNewString(t *testing.T) {
 
 		Convey("Get", func() {
 			for k := range hm {
-				So(m.Get(strconv.Itoa(k)), ShouldEqual, k<<1)
+				key, ok := m.Get(strconv.Itoa(k))
+				So(ok, ShouldEqual, true)
+				So(key, ShouldEqual, k<<1)
 			}
 		})
 
@@ -49,6 +51,22 @@ func TestNewString(t *testing.T) {
 		Convey("Max", func() {
 			key, _ := m.Max()
 			So(key, ShouldEqual, sl[testCountString-1])
+		})
+
+		Convey("Keys", func() {
+			keys := m.Keys()
+			So(len(keys), ShouldEqual, len(sl))
+			for i := range keys {
+				So(keys[i], ShouldEqual, sl[i])
+			}
+		})
+
+		Convey("Values", func() {
+			values := m.Values()
+			So(len(values), ShouldEqual, len(sl))
+			for i := range values {
+				So(strconv.Itoa(values[i].(int)>>1), ShouldEqual, sl[i])
+			}
 		})
 
 		Convey("RangeAll", func() {
@@ -159,8 +177,8 @@ func TestNewString(t *testing.T) {
 
 		Convey("EmptyMap", func() {
 			m := orderedmap.NewString()
-			v := m.Get("1")
-			So(v, ShouldEqual, nil)
+			_, ok := m.Get("1")
+			So(ok, ShouldEqual, false)
 			m.Delete("2")
 			k, v := m.Min()
 			So(k, ShouldEqual, "")
@@ -228,7 +246,7 @@ func BenchmarkString_Get(b *testing.B) {
 	}
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
-		_ = m.Get(sl[i])
+		_, _ = m.Get(sl[i])
 	}
 }
 

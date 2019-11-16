@@ -1,5 +1,7 @@
 package orderedmap
 
+import "github.com/shengmingzhu/datastructures/pair"
+
 type Int8 struct {
 	m OrderedMap
 }
@@ -20,9 +22,9 @@ func cmpInt8(key1, key2 interface{}) int {
 }
 
 // Get returns the value to key, or nil if not found.
-// For example: if value := t.Get(key); value != nil { value found }
+// For example: if value, ok := t.Get(key); ok { value found }
 // O(logN)
-func (m *Int8) Get(key int8) interface{} {
+func (m *Int8) Get(key int8) (interface{}, bool) {
 	return m.m.Get(key)
 }
 
@@ -81,74 +83,63 @@ func (m *Int8) PopMax() (int8, interface{}) {
 	return key.(int8), value
 }
 
-// RangeAll traversals in ASC
-// O(N)
-func (m *Int8) RangeAll() []*Int8KeyValue {
-	r := m.m.RangeAll()
-	res := make([]*Int8KeyValue, len(r))
-	for i, v := range r {
-		res[i] = &Int8KeyValue{Key: v.First.(int8), Value: v.Second}
+func (m *Int8) Keys() []int8 {
+	r := m.m.Keys()
+	res := make([]int8, len(r))
+	for i := range r {
+		res[i] = r[i].(int8)
 	}
 	return res
 }
 
+func (m *Int8) Values() []interface{} {
+	return m.m.Values()
+}
+
+// RangeAll traversals in ASC
+// O(N)
+func (m *Int8) RangeAll() []Int8KeyValue {
+	r := m.m.RangeAll()
+	return transformInt8(r)
+}
+
 // RangeAllDesc traversals in DESC
 // O(N)
-func (m *Int8) RangeAllDesc() []*Int8KeyValue {
+func (m *Int8) RangeAllDesc() []Int8KeyValue {
 	r := m.m.RangeAllDesc()
-	res := make([]*Int8KeyValue, len(r))
-	for i, v := range r {
-		res[i] = &Int8KeyValue{Key: v.First.(int8), Value: v.Second}
-	}
-	return res
+	return transformInt8(r)
 }
 
 // Range traversals in [minKey, maxKey] in ASC
 // MinKey & MaxKey are all closed interval.
 // O(N)
-func (m *Int8) Range(minKey, maxKey int8) []*Int8KeyValue {
+func (m *Int8) Range(minKey, maxKey int8) []Int8KeyValue {
 	r := m.m.Range(minKey, maxKey)
-	res := make([]*Int8KeyValue, len(r))
-	for i, v := range r {
-		res[i] = &Int8KeyValue{Key: v.First.(int8), Value: v.Second}
-	}
-	return res
+	return transformInt8(r)
 }
 
 // RangeDesc traversals in [minKey, maxKey] in DESC
 // MinKey & MaxKey are all closed interval.
 // O(N)
-func (m *Int8) RangeDesc(minKey, maxKey int8) []*Int8KeyValue {
+func (m *Int8) RangeDesc(minKey, maxKey int8) []Int8KeyValue {
 	r := m.m.RangeDesc(minKey, maxKey)
-	res := make([]*Int8KeyValue, len(r))
-	for i, v := range r {
-		res[i] = &Int8KeyValue{Key: v.First.(int8), Value: v.Second}
-	}
-	return res
+	return transformInt8(r)
 }
 
 // RangeN get num key-values which >= key in ASC
 // Pair.First: Key, Pair.Second: Value
 // O(N)
-func (m *Int8) RangeN(num int, key int8) []*Int8KeyValue {
+func (m *Int8) RangeN(num int, key int8) []Int8KeyValue {
 	r := m.m.RangeN(num, key)
-	res := make([]*Int8KeyValue, len(r))
-	for i, v := range r {
-		res[i] = &Int8KeyValue{Key: v.First.(int8), Value: v.Second}
-	}
-	return res
+	return transformInt8(r)
 }
 
 // RangeDescN get num key-values which <= key in DESC
 // Pair.First: Key, Pair.Second: Value
 // O(N)
-func (m *Int8) RangeDescN(num int, key int8) []*Int8KeyValue {
+func (m *Int8) RangeDescN(num int, key int8) []Int8KeyValue {
 	r := m.m.RangeDescN(num, key)
-	res := make([]*Int8KeyValue, len(r))
-	for i, v := range r {
-		res[i] = &Int8KeyValue{Key: v.First.(int8), Value: v.Second}
-	}
-	return res
+	return transformInt8(r)
 }
 
 func (m *Int8) Len() int {
@@ -162,4 +153,13 @@ func (m *Int8) IsEmpty() bool {
 // Deprecated: only for debugging, unstable function
 func (m *Int8) String() string {
 	return m.m.String()
+}
+
+func transformInt8(r []pair.Pair) []Int8KeyValue {
+	res := make([]Int8KeyValue, len(r))
+	for i := range r {
+		res[i].Key = r[i].First.(int8)
+		res[i].Value = r[i].Second
+	}
+	return res
 }

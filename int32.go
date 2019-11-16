@@ -1,5 +1,7 @@
 package orderedmap
 
+import "github.com/shengmingzhu/datastructures/pair"
+
 type Int32 struct {
 	m OrderedMap
 }
@@ -20,9 +22,9 @@ func cmpInt32(key1, key2 interface{}) int {
 }
 
 // Get returns the value to key, or nil if not found.
-// For example: if value := t.Get(key); value != nil { value found }
+// For example: if value, ok := t.Get(key); ok { value found }
 // O(logN)
-func (m *Int32) Get(key int32) interface{} {
+func (m *Int32) Get(key int32) (interface{}, bool) {
 	return m.m.Get(key)
 }
 
@@ -81,74 +83,63 @@ func (m *Int32) PopMax() (int32, interface{}) {
 	return key.(int32), value
 }
 
-// RangeAll traversals in ASC
-// O(N)
-func (m *Int32) RangeAll() []*Int32KeyValue {
-	r := m.m.RangeAll()
-	res := make([]*Int32KeyValue, len(r))
-	for i, v := range r {
-		res[i] = &Int32KeyValue{Key: v.First.(int32), Value: v.Second}
+func (m *Int32) Keys() []int32 {
+	r := m.m.Keys()
+	res := make([]int32, len(r))
+	for i := range r {
+		res[i] = r[i].(int32)
 	}
 	return res
 }
 
+func (m *Int32) Values() []interface{} {
+	return m.m.Values()
+}
+
+// RangeAll traversals in ASC
+// O(N)
+func (m *Int32) RangeAll() []Int32KeyValue {
+	r := m.m.RangeAll()
+	return transformInt32(r)
+}
+
 // RangeAllDesc traversals in DESC
 // O(N)
-func (m *Int32) RangeAllDesc() []*Int32KeyValue {
+func (m *Int32) RangeAllDesc() []Int32KeyValue {
 	r := m.m.RangeAllDesc()
-	res := make([]*Int32KeyValue, len(r))
-	for i, v := range r {
-		res[i] = &Int32KeyValue{Key: v.First.(int32), Value: v.Second}
-	}
-	return res
+	return transformInt32(r)
 }
 
 // Range traversals in [minKey, maxKey] in ASC
 // MinKey & MaxKey are all closed interval.
 // O(N)
-func (m *Int32) Range(minKey, maxKey int32) []*Int32KeyValue {
+func (m *Int32) Range(minKey, maxKey int32) []Int32KeyValue {
 	r := m.m.Range(minKey, maxKey)
-	res := make([]*Int32KeyValue, len(r))
-	for i, v := range r {
-		res[i] = &Int32KeyValue{Key: v.First.(int32), Value: v.Second}
-	}
-	return res
+	return transformInt32(r)
 }
 
 // RangeDesc traversals in [minKey, maxKey] in DESC
 // MinKey & MaxKey are all closed interval.
 // O(N)
-func (m *Int32) RangeDesc(minKey, maxKey int32) []*Int32KeyValue {
+func (m *Int32) RangeDesc(minKey, maxKey int32) []Int32KeyValue {
 	r := m.m.RangeDesc(minKey, maxKey)
-	res := make([]*Int32KeyValue, len(r))
-	for i, v := range r {
-		res[i] = &Int32KeyValue{Key: v.First.(int32), Value: v.Second}
-	}
-	return res
+	return transformInt32(r)
 }
 
 // RangeN get num key-values which >= key in ASC
 // Pair.First: Key, Pair.Second: Value
 // O(N)
-func (m *Int32) RangeN(num int, key int32) []*Int32KeyValue {
+func (m *Int32) RangeN(num int, key int32) []Int32KeyValue {
 	r := m.m.RangeN(num, key)
-	res := make([]*Int32KeyValue, len(r))
-	for i, v := range r {
-		res[i] = &Int32KeyValue{Key: v.First.(int32), Value: v.Second}
-	}
-	return res
+	return transformInt32(r)
 }
 
 // RangeDescN get num key-values which <= key in DESC
 // Pair.First: Key, Pair.Second: Value
 // O(N)
-func (m *Int32) RangeDescN(num int, key int32) []*Int32KeyValue {
+func (m *Int32) RangeDescN(num int, key int32) []Int32KeyValue {
 	r := m.m.RangeDescN(num, key)
-	res := make([]*Int32KeyValue, len(r))
-	for i, v := range r {
-		res[i] = &Int32KeyValue{Key: v.First.(int32), Value: v.Second}
-	}
-	return res
+	return transformInt32(r)
 }
 
 func (m *Int32) Len() int {
@@ -162,4 +153,13 @@ func (m *Int32) IsEmpty() bool {
 // Deprecated: only for debugging, unstable function
 func (m *Int32) String() string {
 	return m.m.String()
+}
+
+func transformInt32(r []pair.Pair) []Int32KeyValue {
+	res := make([]Int32KeyValue, len(r))
+	for i := range r {
+		res[i].Key = r[i].First.(int32)
+		res[i].Value = r[i].Second
+	}
+	return res
 }

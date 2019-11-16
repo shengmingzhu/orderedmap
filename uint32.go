@@ -1,5 +1,7 @@
 package orderedmap
 
+import "github.com/shengmingzhu/datastructures/pair"
+
 type Uint32 struct {
 	m OrderedMap
 }
@@ -20,9 +22,9 @@ func cmpUint32(key1, key2 interface{}) int {
 }
 
 // Get returns the value to key, or nil if not found.
-// For example: if value := t.Get(key); value != nil { value found }
+// For example: if value, ok := t.Get(key); ok { value found }
 // O(logN)
-func (m *Uint32) Get(key uint32) interface{} {
+func (m *Uint32) Get(key uint32) (interface{}, bool) {
 	return m.m.Get(key)
 }
 
@@ -81,74 +83,63 @@ func (m *Uint32) PopMax() (uint32, interface{}) {
 	return key.(uint32), value
 }
 
-// RangeAll traversals in ASC
-// O(N)
-func (m *Uint32) RangeAll() []*Uint32KeyValue {
-	r := m.m.RangeAll()
-	res := make([]*Uint32KeyValue, len(r))
-	for i, v := range r {
-		res[i] = &Uint32KeyValue{Key: v.First.(uint32), Value: v.Second}
+func (m *Uint32) Keys() []uint32 {
+	r := m.m.Keys()
+	res := make([]uint32, len(r))
+	for i := range r {
+		res[i] = r[i].(uint32)
 	}
 	return res
 }
 
+func (m *Uint32) Values() []interface{} {
+	return m.m.Values()
+}
+
+// RangeAll traversals in ASC
+// O(N)
+func (m *Uint32) RangeAll() []Uint32KeyValue {
+	r := m.m.RangeAll()
+	return transformUint32(r)
+}
+
 // RangeAllDesc traversals in DESC
 // O(N)
-func (m *Uint32) RangeAllDesc() []*Uint32KeyValue {
+func (m *Uint32) RangeAllDesc() []Uint32KeyValue {
 	r := m.m.RangeAllDesc()
-	res := make([]*Uint32KeyValue, len(r))
-	for i, v := range r {
-		res[i] = &Uint32KeyValue{Key: v.First.(uint32), Value: v.Second}
-	}
-	return res
+	return transformUint32(r)
 }
 
 // Range traversals in [minKey, maxKey] in ASC
 // MinKey & MaxKey are all closed interval.
 // O(N)
-func (m *Uint32) Range(minKey, maxKey uint32) []*Uint32KeyValue {
+func (m *Uint32) Range(minKey, maxKey uint32) []Uint32KeyValue {
 	r := m.m.Range(minKey, maxKey)
-	res := make([]*Uint32KeyValue, len(r))
-	for i, v := range r {
-		res[i] = &Uint32KeyValue{Key: v.First.(uint32), Value: v.Second}
-	}
-	return res
+	return transformUint32(r)
 }
 
 // RangeDesc traversals in [minKey, maxKey] in DESC
 // MinKey & MaxKey are all closed interval.
 // O(N)
-func (m *Uint32) RangeDesc(minKey, maxKey uint32) []*Uint32KeyValue {
+func (m *Uint32) RangeDesc(minKey, maxKey uint32) []Uint32KeyValue {
 	r := m.m.RangeDesc(minKey, maxKey)
-	res := make([]*Uint32KeyValue, len(r))
-	for i, v := range r {
-		res[i] = &Uint32KeyValue{Key: v.First.(uint32), Value: v.Second}
-	}
-	return res
+	return transformUint32(r)
 }
 
 // RangeN get num key-values which >= key in ASC
 // Pair.First: Key, Pair.Second: Value
 // O(N)
-func (m *Uint32) RangeN(num int, key uint32) []*Uint32KeyValue {
+func (m *Uint32) RangeN(num int, key uint32) []Uint32KeyValue {
 	r := m.m.RangeN(num, key)
-	res := make([]*Uint32KeyValue, len(r))
-	for i, v := range r {
-		res[i] = &Uint32KeyValue{Key: v.First.(uint32), Value: v.Second}
-	}
-	return res
+	return transformUint32(r)
 }
 
 // RangeDescN get num key-values which <= key in DESC
 // Pair.First: Key, Pair.Second: Value
 // O(N)
-func (m *Uint32) RangeDescN(num int, key uint32) []*Uint32KeyValue {
+func (m *Uint32) RangeDescN(num int, key uint32) []Uint32KeyValue {
 	r := m.m.RangeDescN(num, key)
-	res := make([]*Uint32KeyValue, len(r))
-	for i, v := range r {
-		res[i] = &Uint32KeyValue{Key: v.First.(uint32), Value: v.Second}
-	}
-	return res
+	return transformUint32(r)
 }
 
 func (m *Uint32) Len() int {
@@ -162,4 +153,13 @@ func (m *Uint32) IsEmpty() bool {
 // Deprecated: only for debugging, unstable function
 func (m *Uint32) String() string {
 	return m.m.String()
+}
+
+func transformUint32(r []pair.Pair) []Uint32KeyValue {
+	res := make([]Uint32KeyValue, len(r))
+	for i := range r {
+		res[i].Key = r[i].First.(uint32)
+		res[i].Value = r[i].Second
+	}
+	return res
 }
